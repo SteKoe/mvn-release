@@ -12,9 +12,6 @@ jobs:
   set-next-snapshot-version:
     runs-on: ubuntu-latest
     
-    permissions: 
-      contents: write
-    
     steps:
       - run: echo "Will start a Maven Release using version ${{ github.event.inputs.releaseversion }}"
 
