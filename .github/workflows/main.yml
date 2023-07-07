@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      
     steps:
       - run: echo "Will start a Maven Release using version ${{ github.event.inputs.releaseversion }}"
 
@@ -45,27 +46,5 @@ jobs:
       - name: Commit new SNAPSHOT version
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          token: ${{ secrets.PAT }}
+          token: ${{ secrets.GITHUB_TOKEN }}
         
-          
-  publish-github-release:
-    needs: build
-    runs-on: ubuntu-latest
-    permissions: write-all
-    
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Create GitHub Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.event.inputs.releaseversion }}
-          release_name: ${{ github.event.inputs.releaseversion }}
-          body: |
-            ### Things that changed in this release
-            ${{ steps.changelog.outputs.changelog }}
-          draft: false
-          prerelease: ${{ contains(github.event.inputs.releaseversion, '-') }}
