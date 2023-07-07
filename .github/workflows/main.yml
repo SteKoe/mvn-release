@@ -9,10 +9,8 @@ on:
         default: '3.0.0'
         
 jobs: 
-  build:
+  set-next-snapshot-version:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
       
     steps:
       - run: echo "Will start a Maven Release using version ${{ github.event.inputs.releaseversion }}"
@@ -39,9 +37,6 @@ jobs:
             mvn versions:revert && \
             mvn versions:set-property -Dproperty=revision  -DnewVersion="$VERSION" &&
             mvn versions:commit
-      
-      - name: Check changes
-        run: git status
       
       - name: Commit new SNAPSHOT version
         uses: stefanzweifel/git-auto-commit-action@v4
