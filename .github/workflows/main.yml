@@ -44,4 +44,37 @@ jobs:
       
       - name: Commit new SNAPSHOT version
         uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          token: ${{ secrets.PAT }}
+        
           
+  publish-github-release:
+    needs: publish-central-and-pages
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Generate changelog
+        id: changelog
+        uses: metcalfc/changelog-generator@v4.1.0
+        with:
+          myToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.event.inputs.releaseversion }}
+          release_name: ${{ github.event.inputs.releaseversion }}
+          body: |
+            Grab the new version from Maven central https://repo1.maven.org/maven2/de/codecentric/
+
+            Current docs at https://codecentric.github.io/spring-boot-admin/${{ github.event.inputs.releaseversion }}/
+
+            ### Things that changed in this release
+            ${{ steps.changelog.outputs.changelog }}
+          draft: false
+          prerelease: ${{ contains(github.event.inputs.releaseversion, '-') }}
