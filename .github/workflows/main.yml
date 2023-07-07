@@ -30,13 +30,16 @@ jobs:
             
       - name: Set new SNAPSHOT version
         run: > 
-          mvn -q versions:set -DnewVersion="${{ github.event.inputs.releaseversion }}" && \
-            mvn -q  versions:set -DnextSnapshot && \
+          mvn versions:set "-DnewVersion=${{ github.event.inputs.releaseversion }}" && \
+            mvn  versions:set -DnextSnapshot && \
             VERSION=$(mvn exec:exec -Dexec.executable='echo' -Dexec.args='${project.version}' --non-recursive -q) && \
-            mvn -q versions:revert && \
-            mvn -q versions:set-property -Dproperty=revision  -DnewVersion="$VERSION" &&
-            mvn -q versions:commit
-          
+            mvn versions:revert && \
+            mvn versions:set-property -Dproperty=revision  -DnewVersion="$VERSION" &&
+            mvn versions:commit
+      
+      - name: Check changes
+        run: git status
+      
       - name: Commit new SNAPSHOT version
         uses: stefanzweifel/git-auto-commit-action@v4
           
