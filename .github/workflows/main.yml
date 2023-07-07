@@ -11,7 +11,10 @@ on:
 jobs: 
   set-next-snapshot-version:
     runs-on: ubuntu-latest
-      
+    
+    permissions: 
+      contents: write
+    
     steps:
       - run: echo "Will start a Maven Release using version ${{ github.event.inputs.releaseversion }}"
 
@@ -40,6 +43,8 @@ jobs:
       
       - name: Commit new SNAPSHOT version
         uses: stefanzweifel/git-auto-commit-action@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit_message: "Update to next SNAPSHOT version"
