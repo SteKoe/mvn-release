@@ -1,0 +1,42 @@
+name: build & release
+
+on:
+  workflow_dispatch:
+    inputs:
+      releaseversion:
+        description: 'Release version'
+        required: true
+        default: '3.0.0'
+        
+jobs: 
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Will start a Maven Release using version ${{ github.event.inputs.releaseversion }}"
+
+      - uses: actions/checkout@v3
+
+      - name: Cache local Maven repository
+        uses: actions/cache@v3.3.1
+        env:
+          cache-name: cache-mvn
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+            
+      - name: Set new SNAPSHOT version
+        run: > 
+          mvn -q versions:set -DnewVersion="3.190.29" && \
+            mvn -q  versions:set -DnextSnapshot && \
+            VERSION=$(mvn exec:exec -Dexec.executable='echo' -Dexec.args='${project.version}' --non-recursive -q) && \
+            mvn -q versions:revert && \
+            mvn -q versions:set-property -Dproperty=revision  -DnewVersion="$VERSION" &&
+            mvn -q versions:commit
+          
+      - name: Commit new SNAPSHOT version
+        uses: stefanzweifel/git-auto-commit-action@v4
+          
