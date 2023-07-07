@@ -12,6 +12,9 @@ jobs:
   set-next-snapshot-version:
     runs-on: ubuntu-latest
     
+    permissions: 
+      contents: write
+    
     steps:
       - run: echo "Will start a Maven Release using version ${{ github.event.inputs.releaseversion }}"
 
@@ -43,6 +46,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit_message: "Update to next SNAPSHOT version"
+          commit_message: "chore: update to next SNAPSHOT version"
         
