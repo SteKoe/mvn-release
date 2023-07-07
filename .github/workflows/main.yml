@@ -30,7 +30,7 @@ jobs:
             
       - name: Set new SNAPSHOT version
         run: > 
-          mvn -q versions:set -DnewVersion="3.190.29" && \
+          mvn -q versions:set -DnewVersion="${{ github.event.inputs.releaseversion }}" && \
             mvn -q  versions:set -DnextSnapshot && \
             VERSION=$(mvn exec:exec -Dexec.executable='echo' -Dexec.args='${project.version}' --non-recursive -q) && \
             mvn -q versions:revert && \
