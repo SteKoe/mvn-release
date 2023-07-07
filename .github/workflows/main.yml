@@ -49,17 +49,11 @@ jobs:
         
           
   publish-github-release:
-    needs: publish-central-and-pages
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
-
-      - name: Generate changelog
-        id: changelog
-        uses: metcalfc/changelog-generator@v4.1.0
-        with:
-          myToken: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create GitHub Release
         id: create_release
@@ -70,10 +64,6 @@ jobs:
           tag_name: ${{ github.event.inputs.releaseversion }}
           release_name: ${{ github.event.inputs.releaseversion }}
           body: |
-            Grab the new version from Maven central https://repo1.maven.org/maven2/de/codecentric/
-
-            Current docs at https://codecentric.github.io/spring-boot-admin/${{ github.event.inputs.releaseversion }}/
-
             ### Things that changed in this release
             ${{ steps.changelog.outputs.changelog }}
           draft: false
